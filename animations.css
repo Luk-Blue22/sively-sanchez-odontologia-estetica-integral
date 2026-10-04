@@ -1,0 +1,82 @@
+/* Animaciones del sitio. Solo transform/opacity (propiedades `translate` y `scale`
+   independientes, para no pisar los `transform` de Tailwind). Todo queda inactivo
+   hasta que animations.js confirma que cargó y añade `anim-on` a <html>. */
+
+/* ---------- Scroll suave en anclajes ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+html.captura { scroll-behavior: auto !important; }
+/* El header móvil es fijo (4rem): evita que tape el título de la sección anclada */
+@media (max-width: 767.98px) {
+  html { scroll-padding-top: 4rem; }
+}
+
+/* ---------- Revelado (hero al cargar y secciones al hacer scroll) ---------- */
+html.anim-on [data-anim] {
+  opacity: 0 !important;
+  translate: 0 var(--anim-rise, 20px) !important;
+  transition: none !important;
+  will-change: opacity, translate;
+}
+html.anim-on [data-anim].is-in {
+  opacity: 1 !important;
+  translate: 0 0 !important;
+  transition:
+    opacity var(--anim-dur, 700ms) cubic-bezier(.22, .61, .36, 1) var(--anim-delay, 0ms),
+    translate var(--anim-dur, 700ms) cubic-bezier(.22, .61, .36, 1) var(--anim-delay, 0ms) !important;
+}
+
+/* ---------- Hover (solo dispositivos con puntero) ---------- */
+@media (hover: hover) {
+  /* Botones de WhatsApp y llamada: elevación leve + sombra suave */
+  html.anim-on [data-cta] {
+    transition: all .3s ease !important;
+  }
+  html.anim-on [data-cta]:hover {
+    translate: 0 -2px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .35));
+  }
+}
+@media (hover: hover) and (min-width: 768px) {
+  /* Tarjetas sin hover propio (pilares, horarios, dirección, mapa) */
+  html.anim-on [data-hover] {
+    transition: all .3s ease !important;
+  }
+  html.anim-on [data-hover]:hover {
+    translate: 0 -3px;
+  }
+  /* Foto de la doctora: zoom máximo 1.03 */
+  html.anim-on [data-photo] img {
+    transition: scale .6s ease;
+  }
+  html.anim-on [data-photo]:hover img {
+    scale: 1.03;
+  }
+}
+
+/* ---------- Pulso del botón WhatsApp de la barra inferior móvil (3 ciclos) ---------- */
+@keyframes anim-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.18); opacity: .75; }
+}
+html.anim-on #view-m nav a[data-path="whatsapp"] > .material-symbols-outlined {
+  animation: anim-pulse 2s ease-in-out 1.4s 3;
+}
+
+/* ---------- Movimiento reducido: todo desactivado ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html.anim-on [data-anim] {
+    opacity: 1 !important;
+    translate: none !important;
+    transition: none !important;
+  }
+  html.anim-on [data-cta],
+  html.anim-on [data-hover],
+  html.anim-on [data-photo] img {
+    transition: none !important;
+  }
+  html.anim-on #view-m nav a[data-path="whatsapp"] > .material-symbols-outlined {
+    animation: none;
+  }
+}
